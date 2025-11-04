@@ -1,0 +1,47 @@
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+const mongoose = require('mongoose');
+
+// Import routes
+const userRoutes = require('./utils/routes/userRoutes');
+const expenseRoutes = require('./utils/routes/expenseRoutes');
+const recurringExpenseRoutes = require('./utils/routes/recurringExpenseRoutes');
+const ocrRoutes = require('./utils/routes/ocrRoutes');
+const chatRoutes = require('./utils/routes/chatRoutes');
+
+// Import middleware
+const errorMiddleware = require('./middleware/errorMiddleware');
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/users', userRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/recurring-expenses', recurringExpenseRoutes);
+app.use('/api/ocr', ocrRoutes);
+app.use('/api/chat', chatRoutes);
+
+// Error handling middleware
+app.use(errorMiddleware);
+
+// MongoDB connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hisabkitab', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB connection error:', err));
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

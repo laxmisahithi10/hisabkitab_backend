@@ -1,11 +1,17 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai;
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 async function getChatResponse(userMessage) {
   try {
+    if (!openai) {
+      return 'OpenAI service is not configured. Please set OPENAI_API_KEY environment variable.';
+    }
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
