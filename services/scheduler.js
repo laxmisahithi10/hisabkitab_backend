@@ -1,7 +1,7 @@
 const cron = require('node-cron');
-const Expense = require('../models/Expense');
-const RecurringExpense = require('../models/RecurringExpense');
-const User = require('../models/User');
+const Expense = require('../models/expense');
+const RecurringExpense = require('../models/recurringexpense');
+const User = require('../models/user');
 const mailService = require('./mailService');
 const smsService = require('./smsService');
 const mongoose = require('mongoose');
@@ -79,7 +79,7 @@ async function processRecurringExpenses() {
     recExp.nextDueDate = nextDate;
     await recExp.save();
   }
-    }
+}
 
 // Cron jobs
 

@@ -1,5 +1,5 @@
 const Tesseract = require('tesseract.js');
-const Expense = require('../models/Expense');
+const Expense = require('../models/expense');
 
 const parseReceipt = (text) => {
   let title = "";

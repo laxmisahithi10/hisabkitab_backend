@@ -13,6 +13,7 @@ const chatRoutes = require('./utils/routes/chatRoutes');
 
 // Import middleware
 const errorMiddleware = require('./middleware/errorMiddleware');
+const { startAllJobs } = require('./services/scheduler');
 
 dotenv.config();
 
@@ -39,7 +40,11 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hisabkita
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected'))
+.then(() => {
+  console.log('MongoDB connected');
+  // Start cron jobs after DB connection
+  startAllJobs();
+})
 .catch(err => console.error('MongoDB connection error:', err));
 
 app.listen(PORT, () => {

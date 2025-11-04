@@ -1,4 +1,4 @@
-const RecurringExpense = require('../models/RecurringExpense');
+const RecurringExpense = require('../models/recurringexpense');
 
 const addRecurringExpense = async (req, res, next) => {
   try {

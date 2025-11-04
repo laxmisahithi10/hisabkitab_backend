@@ -1,4 +1,4 @@
-const Expense = require('../models/Expense');
+const Expense = require('../models/expense');
 const mongoose = require('mongoose');
 
 const addExpense = async (req, res, next) => {
@@ -38,7 +38,7 @@ const getExpenses = async (req, res, next) => {
 
 const getInsights = async (req, res, next) => {
   try {
-    const userId = mongoose.Types.ObjectId(req.user._id);
+    const userId = new mongoose.Types.ObjectId(req.user._id);
 
     const now = new Date();
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
