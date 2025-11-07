@@ -27,6 +27,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
+// Debug route to check environment variables
+app.get('/debug', (req, res) => {
+  res.json({ 
+    hasJWT: !!process.env.JWT_SECRET,
+    hasMongo: !!process.env.MONGO_URI,
+    nodeEnv: process.env.NODE_ENV
+  });
+});
+
 // Middleware
 app.use(cors({
   origin: ['http://localhost:3000', 'https://hisabkitab-frontend.onrender.com', 'https://hisabkitab-ldis.onrender.com'],
