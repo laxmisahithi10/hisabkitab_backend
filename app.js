@@ -29,7 +29,7 @@ app.get('/health', (req, res) => {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://hisabkitab-frontend.onrender.com'],
+  origin: ['http://localhost:3000', 'https://hisabkitab-frontend.onrender.com', 'https://hisabkitab-ldis.onrender.com'],
   credentials: true
 }));
 app.use(express.json());
