@@ -6,6 +6,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 // Import routes
+const authRoutes = require('./routes/authRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
 const userRoutes = require('./utils/routes/userRoutes');
 const expenseRoutes = require('./utils/routes/expenseRoutes');
 const recurringExpenseRoutes = require('./utils/routes/recurringExpenseRoutes');
@@ -19,12 +22,25 @@ const { startAllJobs } = require('./services/scheduler');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://hisabkitab-frontend.onrender.com'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// Main API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/transactions', transactionRoutes);
+
+// Legacy Routes
 app.use('/api/users', userRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/recurring-expenses', recurringExpenseRoutes);
