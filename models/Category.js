@@ -4,8 +4,7 @@ const categorySchema = new mongoose.Schema({
   name: { 
     type: String, 
     required: true, 
-    trim: true, 
-    unique: true 
+    trim: true
   },
   type: { 
     type: String, 
@@ -21,7 +20,15 @@ const categorySchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, { timestamps: true });
+
+// Compound index for user + name uniqueness
+categorySchema.index({ user: 1, name: 1 }, { unique: true });
 
 module.exports = mongoose.models.Category || mongoose.model('Category', categorySchema);

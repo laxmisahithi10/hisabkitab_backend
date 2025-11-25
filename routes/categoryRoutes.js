@@ -1,13 +1,17 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const Category = require('../models/Category');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
+
+// Protect all category routes
+router.use(authMiddleware);
 
 // GET /api/categories - Fetch all categories (sorted alphabetically)
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.find().sort({ name: 1 });
+    const categories = await Category.find({ user: req.user._id }).sort({ name: 1 });
     res.json({ success: true, categories });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -27,7 +31,7 @@ router.post('/', [
     }
 
     const { name, type, budget = 0 } = req.body;
-    const category = new Category({ name, type, budget });
+    const category = new Category({ name, type, budget, user: req.user._id });
     await category.save();
     
     res.status(201).json({ success: true, category });
@@ -52,8 +56,8 @@ router.put('/:id', [
     }
 
     const { name, type, budget } = req.body;
-    const category = await Category.findByIdAndUpdate(
-      req.params.id,
+    const category = await Category.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
       { name, type, budget },
       { new: true, runValidators: true }
     );
@@ -71,7 +75,7 @@ router.put('/:id', [
 // DELETE /api/categories/:id - Delete a category by ID
 router.delete('/:id', async (req, res) => {
   try {
-    const category = await Category.findByIdAndDelete(req.params.id);
+    const category = await Category.findOneAndDelete({ _id: req.params.id, user: req.user._id });
     if (!category) {
       return res.status(404).json({ success: false, message: 'Category not found' });
     }
