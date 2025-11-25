@@ -11,8 +11,19 @@ router.use(authMiddleware);
 // GET /api/categories - Fetch all categories (sorted alphabetically)
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.find({ user: req.user.id }).sort({ name: 1 });
-    res.json({ success: true, categories });
+    // Debug logging
+    console.log('🔍 User ID from token:', req.user.id);
+    console.log('🔍 User _id from token:', req.user._id);
+    console.log('🔍 Full user object:', req.user);
+    
+    const allCategories = await Category.find({});
+    console.log('🔍 All categories in DB:', allCategories.length);
+    console.log('🔍 Sample category user field:', allCategories[0]?.user);
+    
+    const userCategories = await Category.find({ user: req.user._id }).sort({ name: 1 });
+    console.log('🔍 User categories found:', userCategories.length);
+    
+    res.json({ success: true, categories: userCategories });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -31,7 +42,7 @@ router.post('/', [
     }
 
     const { name, type, budget = 0 } = req.body;
-    const category = new Category({ name, type, budget, user: req.user.id });
+    const category = new Category({ name, type, budget, user: req.user._id });
     await category.save();
     
     res.status(201).json({ success: true, category });
@@ -57,7 +68,7 @@ router.put('/:id', [
 
     const { name, type, budget } = req.body;
     const category = await Category.findOneAndUpdate(
-      { _id: req.params.id, user: req.user.id },
+      { _id: req.params.id, user: req.user._id },
       { name, type, budget },
       { new: true, runValidators: true }
     );
@@ -75,7 +86,7 @@ router.put('/:id', [
 // DELETE /api/categories/:id - Delete a category by ID
 router.delete('/:id', async (req, res) => {
   try {
-    const category = await Category.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+    const category = await Category.findOneAndDelete({ _id: req.params.id, user: req.user._id });
     if (!category) {
       return res.status(404).json({ success: false, message: 'Category not found' });
     }
