@@ -11,7 +11,7 @@ router.use(authMiddleware);
 // GET /api/categories - Fetch all categories (sorted alphabetically)
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.find({ user: req.user._id }).sort({ name: 1 });
+    const categories = await Category.find({ user: req.user.id }).sort({ name: 1 });
     res.json({ success: true, categories });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -31,7 +31,7 @@ router.post('/', [
     }
 
     const { name, type, budget = 0 } = req.body;
-    const category = new Category({ name, type, budget, user: req.user._id });
+    const category = new Category({ name, type, budget, user: req.user.id });
     await category.save();
     
     res.status(201).json({ success: true, category });
@@ -57,7 +57,7 @@ router.put('/:id', [
 
     const { name, type, budget } = req.body;
     const category = await Category.findOneAndUpdate(
-      { _id: req.params.id, user: req.user._id },
+      { _id: req.params.id, user: req.user.id },
       { name, type, budget },
       { new: true, runValidators: true }
     );
@@ -75,7 +75,7 @@ router.put('/:id', [
 // DELETE /api/categories/:id - Delete a category by ID
 router.delete('/:id', async (req, res) => {
   try {
-    const category = await Category.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+    const category = await Category.findOneAndDelete({ _id: req.params.id, user: req.user.id });
     if (!category) {
       return res.status(404).json({ success: false, message: 'Category not found' });
     }
