@@ -11,6 +11,16 @@ const categorySchema = new mongoose.Schema({
     type: String, 
     required: true, 
     enum: ['income', 'expense'] 
+  },
+  budget: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  spent: {
+    type: Number,
+    default: 0,
+    min: 0
   }
 }, { timestamps: true });
 

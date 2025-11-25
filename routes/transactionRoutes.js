@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     }
 
     const transactions = await Transaction.find(filter)
-      .populate('category', 'name type')
+      .populate('category', 'name type budget spent')
       .sort({ date: -1 });
 
     res.json({ success: true, transactions });
@@ -67,7 +67,15 @@ router.post('/', [
     });
 
     await transaction.save();
-    await transaction.populate('category', 'name type');
+    
+    // Update category spent amount if it's an expense
+    if (type === 'expense') {
+      await Category.findByIdAndUpdate(category, {
+        $inc: { spent: amount }
+      });
+    }
+    
+    await transaction.populate('category', 'name type budget spent');
     
     res.status(201).json({ success: true, transaction });
   } catch (error) {
@@ -78,10 +86,19 @@ router.post('/', [
 // DELETE /api/transactions/:id - Delete transaction by ID
 router.delete('/:id', async (req, res) => {
   try {
-    const transaction = await Transaction.findByIdAndDelete(req.params.id);
+    const transaction = await Transaction.findById(req.params.id);
     if (!transaction) {
       return res.status(404).json({ success: false, message: 'Transaction not found' });
     }
+
+    // Update category spent amount if it's an expense
+    if (transaction.type === 'expense') {
+      await Category.findByIdAndUpdate(transaction.category, {
+        $inc: { spent: -transaction.amount }
+      });
+    }
+
+    await Transaction.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Transaction deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
