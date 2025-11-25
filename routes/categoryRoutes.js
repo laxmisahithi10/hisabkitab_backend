@@ -11,19 +11,8 @@ router.use(authMiddleware);
 // GET /api/categories - Fetch all categories (sorted alphabetically)
 router.get('/', async (req, res) => {
   try {
-    // Debug logging
-    console.log('🔍 User ID from token:', req.user.id);
-    console.log('🔍 User _id from token:', req.user._id);
-    console.log('🔍 Full user object:', req.user);
-    
-    const allCategories = await Category.find({});
-    console.log('🔍 All categories in DB:', allCategories.length);
-    console.log('🔍 Sample category user field:', allCategories[0]?.user);
-    
-    const userCategories = await Category.find({ user: req.user._id }).sort({ name: 1 });
-    console.log('🔍 User categories found:', userCategories.length);
-    
-    res.json({ success: true, categories: userCategories });
+    const categories = await Category.find({ user: req.user._id }).sort({ name: 1 });
+    res.json({ success: true, categories });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
